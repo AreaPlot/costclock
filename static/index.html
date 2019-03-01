@@ -1,0 +1,189 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Cost Clock - Display the True Value of Meetings</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="/static/app.css" />
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.2.1/typeahead.bundle.min.js" integrity="sha256-VCsWOz+0GuHdS/sIICtQNTFJdbaDI80rxvoB7BXabrU=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="/static/app.js"></script>
+    </head>
+    <body>
+    <a href="https://github.com/areaplot/costclock"><img width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_red_aa0000.png?resize=149%2C149" class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1" style="position:absolute; right:0; float: both; z-index: 1000;"></a> 
+    <nav class="navbar navbar-expand navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">CostClock</a>
+       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown"> 
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Clock <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="#participants">Participants</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="#settings">Settings</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="#about">About</a>
+          </li>
+        </ul>
+       </div> 
+    </nav>
+    <div class="container">
+        <header>
+            <h1>Cost Clock</h1>
+            <p id="site_slogan">Display the True Cost of Meetings</p>
+        </header>
+        <section id="sec_clock"><a name="clock"></a>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="jumbotron">
+                    <h1 id="dsp_clock" class="display-1 font-weight-bold">$0.00</h1>
+                    <h3 id="dsp_clock_actualtime">00:00:00</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-10">
+                    <button id="btn_clock" class="clockctl btn btn-block btn-success" onclick="toggleTimer()">Start</button>
+                </div>
+                <div class="col-md-2">
+                    <button id="btn_clock" class="clockctl btn btn-block btn-danger" onclick="resetTimer()">Reset</button>
+                </div>
+            </div>
+        </section>
+        <section id="sec_participants"><a name="participants"></a>
+            <div class="row"><div class="col-md-12">
+            <h3>Meeting Participants</h3>
+            <p>Find a public employee through the search or add a custom individual.</p>
+            <div id="dsp_participants">
+            <form id="frm_participants">
+                <input type="text" class="form-control typeahead border-primary" name="search_query" id="search_query" placeholder="Start typing to search employees..." data-provide="typeahead" autocomplete="off">
+            </form>
+            <table class="table table-striped" id="tbl_participants">
+                <thead><tr><th>Participants</th><th>&nbsp;</th></tr></thead>
+                <tbody></tbody>
+                <tfoot><tr><td colspan="2"><button class="btn btn-block btn-info" data-toggle="modal" data-target="#mod_addparticipant">Add New Participant</button></td></tr></tfoot>
+            </table>
+            <div class="modal fade" id="mod_addparticipant" tabindex="-1" role="dialog" aria-labelledby="mod_label" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="mod_label">New Participant</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                      <form class="form-horizontal" role="form">
+                          <div class="form-group row">
+                              <label for="add_name" class="col-sm-4 col-form-label">Participant Name</label>
+                              <div class="col-sm-8">
+                                  <input type="text" class="form-control" id="add_name" placeholder="Joe Meeting" value="">
+                              </div>
+                          </div>
+                          <div class="form-group row">
+                              <label for="add_annual" class="col-sm-4 col-form-label">Annual Salary</label>
+                              <div class="col-sm-8">
+                                  <input type="numeric" class="form-control" min="0" max="1000000000" step="1" id="add_annual" placeholder="80000" value="0"
+                                     onchange="calcParticipantDisplay('annual', this.value);">
+                              </div>
+                          </div>
+                          <div class="form-group row">
+                              <label for="add_hourly" class="col-sm-4 col-form-label">Hourly Rate</label>
+                              <div class="col-sm-8">
+                                  <input type="numeric" class="form-control" min="0" max="100000" step="0.01" id="add_hourly" placeholder="15.75" value="0"
+                                     onchange="calcParticipantDisplay('hourly', this.value);">
+                              </div>
+                          </div>
+                        </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="addNewParticipant();">Add Participant</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2 fix_headingalign">Cost Per Minute</div>
+                <div class="col-sm-4"><h2 id="set_costperminute">$0.00</h2></div>
+                <div class="col-md-2 fix_headingalign">Cost Per Hour</div>
+                <div class="col-sm-4"><h2 id="set_costperhour">$0.00</h2></div>
+            </div>
+            </div></div>
+        </section>
+        <section id="sec_settings"><a name="settings"></a>
+         <form class="form-horizontal" role="form">
+            <div class="row"><div class="col-md-12">
+            <h3>Settings</h3>
+              <div class="form-group row">
+                <label for="set_startamount" class="col-sm-2 col-form-label">Set Time Elapsed</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="set_clock_actualtime" placeholder="00:00:00" value="00:00:00" 
+                         data-toggle="tooltip" data-placement="left" title="Set to 00:30:00 if the 30 minutes have already passed."
+                         onchange="setMeetingTime(this.value);">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="set_weeks" class="col-sm-2 col-form-label">Weeks</label>
+                <div class="col-sm-10">
+                  <input type="number" min="1" max="53" step="1" class="form-control" id="set_weeks" placeholder="52" value="52"
+                         data-toggle="tooltip" data-placement="left" title="Number of weeks used to calculate annual salary."                       
+                         onchange="setWeeksPerYear(this.value);">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="set_hours" class="col-sm-2 col-form-label">Hours</label>
+                <div class="col-sm-10">
+                  <input type="number" min="1" max="60" step="1" class="form-control" id="set_hours" placeholder="40" value="40" 
+                         data-toggle="tooltip" data-placement="left" title="Number of hours per week used to calculate annual salary."                       
+                         onchange="setHoursPerWeek(this.value);">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="set_multiplier" class="col-sm-2 col-form-label">Multiplier</label>
+                <div class="col-sm-10">
+                  <input type="number" min="1" max="2" step="0.01" class="form-control" id="set_multiplier" placeholder="1" value="1" 
+                         data-toggle="tooltip" data-placement="left" title="e.g. additional 50% of salary as fringe benefits = &quot;1.5&quot;." 
+                         onchange="setMultiplier(this.value);">
+                </div>
+              </div>
+            </div></div>
+         </form>
+        </section>
+        <section id="sec_about"><a name="about"></a>
+            <div class="row"><div class="col-md-12">
+                    <h3>What&apos;s this all about?</h3>
+                    <p>CostClock was developed as a resource to be used in meetings to remind people that time is valuable and should be spent wisely.</p>
+                    <h4>How can I help improve meetings?</h4>
+                    <ul>
+                        <li><a href="https://hbr.org/2017/07/stop-the-meeting-madness?">HBR.org - Stop the Meeting Madness</a></li>
+                        <li><a href="https://hbr.org/product/recommended/an/10139E-KND-ENG">HBR Guide to Making Every Meeting Matter</a></li>
+                        <li><a href="https://ideas.ted.com/9-common-sense-rules-for-getting-the-most-out-of-meetings/">TED - 9 common-sense rules for getting the most out of meetings</a></li>
+                    </ul>
+                    <h4>What happens when I add and remove people from the meeting?</h4>
+                    <p>The amount displayed is based on the total time elapsed and the total salaries of all the participants. 
+                </div>
+            </div>
+        </section>
+    <footer>
+        <div class="row"><div class="col-md-8">
+        <p>Developed by Areaplot, LLC. </p>
+        <p><img src="/static/jersey-bw.png" id="jersey" /> Lovingly handcrafted in New Jersey.</p>
+        </div><div class="col-md-4 text-right">
+            &nbsp;
+        </div></div>
+    </footer>
+    </div> <!-- /container -->
+    </body>
+</html>
+

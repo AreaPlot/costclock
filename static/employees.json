@@ -1,0 +1,12 @@
+[
+    {
+        "basesalary": 0,
+        "department": "Example Department",
+        "jobtitle": "Example Title",
+        "name": "Employee, Example",
+        "organization": "Example Organization",
+        "source": "employees.json",
+        "hash": "unique_id_here"
+    }
+]
+
